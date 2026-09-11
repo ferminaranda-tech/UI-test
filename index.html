@@ -66,19 +66,21 @@
     background:var(--gray-100);
   }
   .tab.active{ background:var(--gray-900); color:var(--white); }
-  .stage-body{ flex:1; padding:16px; display:flex; flex-direction:column; gap:14px; }
+  .stage-body{ flex:1; padding:16px; display:flex; flex-direction:column; gap:14px; padding-bottom:40px; }
   .card{
     background:var(--white); border:1px solid var(--gray-200); border-radius:14px; padding:16px;
   }
   .card .line{ height:10px; border-radius:6px; background:var(--gray-150); margin-bottom:8px; }
   .card .line.short{ width:55%; }
   .triggers{ display:flex; flex-direction:column; gap:10px; margin-top:4px; }
+  .triggers .group-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--gray-500); margin:10px 0 -2px; }
   .btn{
-    appearance:none; border:none; border-radius:12px; padding:14px 18px; font-size:15px;
-    font-weight:600; cursor:pointer; text-align:center;
+    appearance:none; border:none; border-radius:12px; padding:14px 16px; font-size:14px;
+    font-weight:600; cursor:pointer; text-align:left;
   }
   .btn-trigger{ background:var(--gray-900); color:var(--white); }
   .btn-trigger:active{ background:var(--gray-950); }
+  .btn-trigger .sub{ display:block; font-size:11.5px; font-weight:500; color:var(--gray-300); margin-top:2px; }
 
   /* ---------- capa de superficies ---------- */
   #surfaceLayer{ position:fixed; inset:0; pointer-events:none; z-index:1000; }
@@ -87,6 +89,7 @@
     background:#000; opacity:0; will-change:opacity;
     pointer-events:auto;
   }
+  .surf-group:not([data-has-backdrop="1"]) .backdrop{ pointer-events:none !important; }
   .surf-group[data-covered="1"] .backdrop,
   .surf-group[data-covered="1"] .sheet,
   .surf-group[data-covered="1"] .sheet-footer{
@@ -103,41 +106,64 @@
     pointer-events:auto;
     overflow:hidden;
   }
+  .drag-zone{ flex:0 0 auto; touch-action:none; cursor:grab; }
   .handle-zone{
-    flex:0 0 auto;
     padding-top:8px;
-    touch-action:none;
-    cursor:grab;
   }
+  .is-hug .handle-zone{ display:none; }
+  .is-hug .drag-zone{ touch-action:auto; cursor:default; }
+  .is-hug .header{ padding-top:18px; }
   .handle-row{
     height:22px; display:flex; align-items:center; justify-content:center; position:relative;
   }
   .grabber{
     position:absolute; width:40px; height:4px; border-radius:2px; background:var(--gray-300);
   }
-  .chevron{
+  .chevron-handle{
     position:absolute; width:22px; height:22px; opacity:0;
     display:flex; align-items:center; justify-content:center;
   }
-  .chevron svg{ width:18px; height:18px; }
+  .chevron-handle svg{ width:18px; height:18px; }
   .header{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:6px 18px 14px;
-    gap:8px;
+    display:flex; align-items:center;
+    padding:6px 10px 14px 18px;
+    gap:6px;
   }
-  .header .title{ font-size:17px; font-weight:700; color:var(--gray-950); }
+  .header .title{ font-size:17px; font-weight:700; color:var(--gray-950); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .nav-back{
+    appearance:none; border:none; background:none; color:var(--gray-700);
+    width:32px; height:44px; flex:0 0 auto; display:flex; align-items:center; justify-content:flex-start;
+    cursor:pointer; padding:0; margin-left:-6px;
+  }
+  .nav-back[hidden]{ display:none; }
+  .nav-back svg{ width:20px; height:20px; }
+  .header-actions{ display:flex; align-items:center; gap:2px; flex:0 0 auto; }
+  .icon-btn{
+    appearance:none; border:none; background:var(--gray-150); color:var(--gray-700);
+    width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex:0 0 auto;
+  }
+  .icon-btn svg{ width:16px; height:16px; }
+  .icon-btn.pulse{ animation:iconPulse .28s ease; }
+  @keyframes iconPulse{ 0%{ transform:scale(1); } 45%{ transform:scale(0.85); } 100%{ transform:scale(1); } }
   .close-x{
     appearance:none; border:none; background:var(--gray-150); color:var(--gray-700);
-    width:30px; height:30px; border-radius:50%; font-size:16px; line-height:1;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    width:44px; height:44px; border-radius:50%; font-size:19px; line-height:1;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; flex:0 0 auto;
   }
+
+  /* ---------- viewport de navegación interna (slide horizontal) ---------- */
+  .nav-viewport{ position:relative; overflow:hidden; }
+  .nav-track{ display:flex; align-items:flex-start; will-change:transform; }
+  .nav-view{ flex:0 0 100%; min-width:100%; padding:4px 18px 24px; }
+
   .content{
     flex:0 0 auto;
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
     overscroll-behavior:contain;
-    padding:4px 18px 24px;
   }
+
   .sheet-footer{
     position:fixed; left:0; right:0; bottom:0; height:var(--footer-h);
     background:var(--gray-50);
@@ -157,7 +183,7 @@
     padding:13px 14px; cursor:pointer;
   }
 
-  /* ---------- contenido de prueba: drawer ---------- */
+  /* ---------- contenido de prueba: listas / selección ---------- */
   .search-field{
     width:100%; border:1px solid var(--gray-200); background:var(--white); border-radius:10px;
     padding:11px 12px; font-size:14px; margin:10px 0 12px; color:var(--gray-950);
@@ -176,11 +202,16 @@
   .tpl-card .txt{ flex:1; min-width:0; }
   .tpl-card .txt .t1{ font-size:14px; font-weight:600; color:var(--gray-950); }
   .tpl-card .txt .t2{ font-size:12px; color:var(--gray-500); margin-top:2px; }
+  .tpl-card .detail-nav{
+    appearance:none; border:none; background:none; color:var(--gray-500); flex:0 0 auto;
+    width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .tpl-card .detail-nav svg{ width:16px; height:16px; }
   input[type="checkbox"].chk{
     width:20px; height:20px; accent-color:var(--accent); flex:0 0 auto;
   }
 
-  /* ---------- contenido de prueba: modal ---------- */
+  /* ---------- contenido de prueba: formularios ---------- */
   .field{ margin-bottom:18px; }
   .field label.flabel{ display:block; font-size:13px; font-weight:600; color:var(--gray-700); margin-bottom:6px; }
   .field input[type="text"], .field input[type="number"], .field textarea{
@@ -223,6 +254,32 @@
   .tpl-row .sub{ font-size:12px; color:var(--gray-500); margin-top:2px; }
   .tpl-row svg{ width:16px; height:16px; color:var(--gray-500); flex:0 0 auto; }
 
+  /* ---------- contenido de prueba: ficha "Cliente" ---------- */
+  .client-header{ display:flex; gap:12px; align-items:center; margin-bottom:14px; }
+  .avatar{
+    width:52px; height:52px; border-radius:50%; flex:0 0 auto;
+    background:linear-gradient(135deg,var(--gray-300),var(--gray-500));
+    display:flex; align-items:center; justify-content:center; color:var(--white); font-weight:700; font-size:18px;
+  }
+  .client-name{ font-size:16px; font-weight:700; color:var(--gray-950); }
+  .client-sub{ font-size:12px; color:var(--gray-500); margin-top:2px; }
+  .tag-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+  .tag{ padding:3px 10px; border-radius:999px; background:var(--gray-150); font-size:11px; color:var(--gray-700); font-weight:600; }
+  .client-tabs{ display:flex; gap:14px; margin:0 0 14px; border-bottom:1px solid var(--gray-200); }
+  .client-tab{ padding:0 0 9px; font-size:13px; color:var(--gray-500); border-bottom:2px solid transparent; font-weight:600; }
+  .client-tab.active{ color:var(--gray-950); border-color:var(--accent); }
+  .chip-row{ display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:16px; }
+  .chip{ flex:0 0 auto; padding:6px 13px; border-radius:999px; border:1px solid var(--gray-200); background:var(--white); font-size:12px; color:var(--gray-700); white-space:nowrap; }
+  .chip.active{ background:var(--gray-900); color:var(--white); border-color:var(--gray-900); }
+  .metric-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
+  .metric-card{ background:var(--white); border:1px solid var(--gray-200); border-radius:12px; padding:12px; }
+  .metric-card .num{ font-size:19px; font-weight:700; color:var(--gray-950); }
+  .metric-card .lbl{ font-size:11px; color:var(--gray-500); margin-top:2px; }
+  .table-wrap{ border:1px solid var(--gray-200); border-radius:12px; overflow:hidden; margin-bottom:8px; }
+  .data-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  .data-table th{ text-align:left; font-size:10.5px; color:var(--gray-500); font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:9px 10px; background:var(--gray-100); }
+  .data-table td{ padding:10px; border-top:1px solid var(--gray-150); color:var(--gray-900); }
+
   /* ---------- confirm dialog ---------- */
   #confirmOverlay{
     position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:5000;
@@ -253,12 +310,13 @@
   }
   #settingsPanel{
     position:fixed; top:calc(env(safe-area-inset-top,0px) + 54px); right:12px; z-index:4000;
-    width:min(300px, calc(100vw - 24px)); max-height:70vh; overflow-y:auto;
+    width:min(300px, calc(100vw - 24px)); max-height:75vh; overflow-y:auto;
     background:var(--white); border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,0.3);
     padding:14px; display:none; font-size:12.5px;
   }
   #settingsPanel.open{ display:block; }
-  #settingsPanel h4{ margin:0 0 10px; font-size:13px; color:var(--gray-950); }
+  #settingsPanel h4{ margin:14px 0 10px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--gray-500); }
+  #settingsPanel h4:first-child{ margin-top:0; }
   .setting-row{ margin-bottom:12px; }
   .setting-row label{ display:block; font-weight:600; color:var(--gray-700); margin-bottom:4px; }
   .setting-row input[type="number"], .setting-row select{
@@ -301,8 +359,15 @@
       <div class="line short"></div>
     </div>
     <div class="triggers">
-      <button class="btn btn-trigger" id="openDrawerBtn">Abrir drawer</button>
-      <button class="btn btn-trigger" id="openModalBtn">Abrir modal</button>
+      <div class="group-label">Escenarios de prueba</div>
+      <button class="btn btn-trigger" id="scn1">1. Modal hug con backdrop<span class="sub">Contenido corto, sin grabber</span></button>
+      <button class="btn btn-trigger" id="scn2">2. Drawer hug sin backdrop<span class="sub">Solo cerrable por X o Cancelar</span></button>
+      <button class="btn btn-trigger" id="scn3">3. Modal 100% con backdrop<span class="sub">Formulario largo, scroll normal</span></button>
+      <button class="btn btn-trigger" id="scn4">4. Drawer con navegación interna<span class="sub">Configurar → Seleccionar → Detalle</span></button>
+      <button class="btn btn-trigger" id="scn5">5. Drawer sin backdrop al 50%<span class="sub">Ficha cliente, encadenamiento gesto→scroll</span></button>
+      <button class="btn btn-trigger" id="scn6">6. Drawer sobre drawer (anchos distintos)<span class="sub">Prueba con y sin backdrop</span></button>
+      <button class="btn btn-trigger" id="scn7">7. Drawer con estado sucio<span class="sub">Confirm en tap, arrastre, X y Cancelar</span></button>
+      <button class="btn btn-trigger" id="scn8">8. Hug que crece más allá del 50%<span class="sub">Transición a superficie normal</span></button>
     </div>
   </div>
 </div>
@@ -312,7 +377,7 @@
 <div id="confirmOverlay">
   <div class="confirm-box">
     <h3 id="confirmTitle">¿Descartar los cambios?</h3>
-    <p id="confirmBody">Perderás los cambios que no se han guardado.</p>
+    <p id="confirmBody">Los cambios que has hecho se perderán.</p>
     <div class="confirm-actions">
       <button class="btn-discard" id="confirmDiscardBtn">Descartar</button>
       <button class="btn-keep" id="confirmKeepBtn">Seguir editando</button>
@@ -322,8 +387,7 @@
 
 <button id="gearBtn" aria-label="Ajustes">&#9881;</button>
 <div id="settingsPanel">
-  <h4>Ajustes de gesto</h4>
-
+  <h4>Snap</h4>
   <div class="setting-row">
     <label>Umbral de snap por distancia (%)</label>
     <input type="number" id="cfgDist" min="1" max="90" step="1">
@@ -349,20 +413,30 @@
     <label>Offset tope capas apiladas (px)</label>
     <input type="number" id="cfgOffset" min="0" max="200" step="4">
   </div>
+
+  <h4>Tap vs. arrastre</h4>
   <div class="setting-row">
-    <label>Altura de reposo inicial (%)</label>
-    <input type="number" id="cfgInitial" min="50" max="100" step="1">
+    <label>Umbral de tap por distancia (px)</label>
+    <input type="number" id="cfgTapDist" min="1" max="40" step="1">
   </div>
+  <div class="setting-row">
+    <label>Umbral de tap por duración (ms)</label>
+    <input type="number" id="cfgTapDur" min="50" max="800" step="10">
+  </div>
+
+  <h4>Escenario 5</h4>
   <div class="setting-row inline">
-    <label>Confirm también en drawer con selección pendiente</label>
+    <label>Backdrop en "Ficha cliente" (50%↔100%)</label>
     <div class="settings-mini-switch">
-      <input type="checkbox" id="cfgDrawerConfirm">
+      <input type="checkbox" id="cfgTestBackdrop">
       <div class="track"></div><div class="knob"></div>
     </div>
   </div>
+
+  <h4>Estado</h4>
   <div class="setting-row">
-    <label>Estado sucio del modal (solo lectura)</label>
-    <div class="readonly-box" id="dirtyIndicator">Ninguno abierto</div>
+    <label>Estado sucio (superficie activa)</label>
+    <div class="readonly-box" id="dirtyIndicator">Ninguna abierta</div>
   </div>
 </div>
 
@@ -378,8 +452,9 @@
     snapDurationMs: 300,
     easing: 'cubic-bezier(0.32,0.72,0,1)',
     stackOffsetPx: 64,
-    initialRestPct: 50,
-    confirmDrawerToggle: false
+    tapMaxDistancePx: 8,
+    tapMaxDurationMs: 250,
+    testDrawerBackdrop: false
   };
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -389,91 +464,43 @@
   function closedPx(){ return vh() + 60; }
   function clamp(v, min, max){ return Math.min(max, Math.max(min, v)); }
   function clamp01(v){ return clamp(v, 0, 1); }
+  function isFormField(el){
+    var tag = el && el.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+  }
+
+  var ICONS = {
+    chevronDown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>',
+    chevronRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>',
+    chevronLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>',
+    pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>'
+  };
 
   var stack = [];
   var seq = 0;
   var surfaceLayer = document.getElementById('surfaceLayer');
 
-  /* ============ plantillas de contenido ============ */
-  var TEMPLATE_NAMES = [
-    'Evento estándar', 'Lista VIP', 'Reserva mesa', 'Acceso doble',
-    'Pack promotor', 'Guestlist básica', 'Entrada anticipada', 'Combo bebida'
-  ];
-
-  function drawerContentHtml(){
-    var rows = TEMPLATE_NAMES.map(function(name, i){
-      return '' +
-        '<label class="tpl-card">' +
-          '<input type="checkbox" class="chk tpl-check" data-idx="' + i + '">' +
-          '<div class="thumb"></div>' +
-          '<div class="txt"><div class="t1">' + name + '</div><div class="t2">Plantilla #' + (i + 1) + ' · 12 campos</div></div>' +
-        '</label>';
-    }).join('');
-    return '' +
-      '<input type="text" class="search-field" placeholder="Buscar plantilla…">' +
-      '<div class="select-all-row">' +
-        '<div class="left"><input type="checkbox" class="chk js-sel-all"><span>Todos</span></div>' +
-        '<div class="count js-sel-count">0 de 8 seleccionadas</div>' +
-      '</div>' +
-      rows +
-      '<div class="tpl-row js-stack-more" style="margin-top:14px;">' +
-        '<div><div class="tt">Filtrar por carpeta</div><div class="sub">Abre otro drawer encima (prueba de apilado)</div></div>' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>' +
-      '</div>';
-  }
-
-  function modalContentHtml(){
-    return '' +
-      '<div class="field">' +
-        '<label class="flabel">Nombre</label>' +
-        '<input type="text" class="mfield" placeholder="Nombre del complemento">' +
-      '</div>' +
-      '<div class="field">' +
-        '<div class="toggle-row">' +
-          '<div><div class="tt">Disponible</div><div class="dd">Visible para la venta en el acceso.</div></div>' +
-          '<label class="switch"><input type="checkbox" class="mfield"><div class="track"></div><div class="knob"></div></label>' +
-        '</div>' +
-      '</div>' +
-      '<div class="field">' +
-        '<label class="flabel">Precio</label>' +
-        '<div class="price-wrap"><input type="number" class="mfield" placeholder="0.00"><span>€</span></div>' +
-      '</div>' +
-      '<div class="tpl-row js-tpl-row">' +
-        '<div><div class="tt">Plantilla</div><div class="sub">Ninguna seleccionada</div></div>' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>' +
-      '</div>' +
-      '<div class="field">' +
-        '<label class="flabel">Descripción</label>' +
-        '<textarea class="mfield" maxlength="240" placeholder="Describe el complemento…"></textarea>' +
-        '<div class="counter"><span class="js-desc-count">0</span>/240</div>' +
-      '</div>' +
-      '<div class="field">' +
-        '<label class="flabel">Archivo</label>' +
-        '<div class="upload-zone">' +
-          '<div class="fname js-filename">Ningún archivo seleccionado</div>' +
-          '<button type="button" class="upload-btn js-upload-btn">Subir archivo</button>' +
-          '<input type="file" class="mfield js-file-input" style="display:none">' +
-        '</div>' +
-      '</div>';
+  /* ============ util: decisión de snap ============ */
+  function decideTarget(candA, candB, currentTy, velocity, distPct, velThresh){
+    var total = candB - candA;
+    if(total === 0) return candA;
+    var progress = clamp01((currentTy - candA) / total);
+    var vDir = velocity > 0 ? 1 : (velocity < 0 ? -1 : 0);
+    var towardB = (Math.sign(total) === vDir) && vDir !== 0;
+    if(Math.abs(velocity) > velThresh && towardB) return candB;
+    if(progress >= (distPct / 100)) return candB;
+    return candA;
   }
 
   /* ============ diálogo de confirmación ============ */
   var confirmOverlay = document.getElementById('confirmOverlay');
-  var confirmTitle = document.getElementById('confirmTitle');
-  var confirmBody = document.getElementById('confirmBody');
   var confirmDiscardBtn = document.getElementById('confirmDiscardBtn');
   var confirmKeepBtn = document.getElementById('confirmKeepBtn');
   var confirmPending = null;
 
   function showConfirm(surface){
     confirmPending = surface;
-    if(surface.type === 'modal'){
-      confirmTitle.textContent = '¿Descartar los cambios?';
-      confirmBody.textContent = 'Los campos editados en este modal se perderán.';
-    } else {
-      confirmTitle.textContent = '¿Descartar la selección?';
-      confirmBody.textContent = 'Las plantillas seleccionadas dejarán de estar marcadas.';
-    }
     confirmOverlay.classList.add('show');
   }
   function hideConfirm(){
@@ -489,46 +516,40 @@
     hideConfirm();
   });
 
-  /* ============ util: decisión de snap ============ */
-  function decideTarget(candA, candB, currentTy, velocity, distPct, velThresh){
-    var total = candB - candA;
-    if(total === 0) return candA;
-    var progress = clamp01((currentTy - candA) / total);
-    var vDir = velocity > 0 ? 1 : (velocity < 0 ? -1 : 0);
-    var towardB = (Math.sign(total) === vDir) && vDir !== 0;
-    if(Math.abs(velocity) > velThresh && towardB) return candB;
-    if(progress >= (distPct / 100)) return candB;
-    return candA;
-  }
-
   /* ============ controlador de superficie ============ */
-  function SurfaceCtrl(type, level){
+  // opts: { type:'drawer'|'modal', hasBackdrop, isHug, title, primaryLabel, buildRoot(viewEl, surface), actionIcons:[{label,svg,onClick}] }
+  function SurfaceCtrl(level, opts){
     this.id = 's' + (++seq);
-    this.type = type;
     this.level = level;
+    this.type = opts.type;
+    this.hasBackdrop = !!opts.hasBackdrop;
+    this.isHug = !!opts.isHug;
+    this.title = opts.title;
+    this.primaryLabel = opts.primaryLabel || 'Guardar';
+    this.actionIcons = opts.actionIcons || [];
     this.rest = 'half';
     this.covered = false;
     this.dirty = false;
     this.savedRest = null;
+    this._wasForcedFull = false;
+    this._contentDragWired = false;
     this.ty = closedPx();
     this._dragSession = null;
-    this.buildDom();
+    this.navStack = null;
+    this.buildDom(opts.buildRoot);
   }
 
   SurfaceCtrl.prototype.floor = function(){ return floorPx(this.level); };
   SurfaceCtrl.prototype.half = function(){ return halfPx(); };
   SurfaceCtrl.prototype.closed = function(){ return closedPx(); };
 
-  SurfaceCtrl.prototype.pendingSelection = function(){
-    if(this.type !== 'drawer') return false;
-    return this.selectedCount > 0;
-  };
-
-  SurfaceCtrl.prototype.buildDom = function(){
+  SurfaceCtrl.prototype.buildDom = function(buildRoot){
     var self = this;
     var group = document.createElement('div');
     group.className = 'surf-group';
     group.dataset.level = String(this.level);
+    if(this.isHug) group.classList.add('is-hug');
+    group.setAttribute('data-has-backdrop', this.hasBackdrop ? '1' : '0');
 
     var zBase = 1000 + this.level * 10;
 
@@ -540,29 +561,32 @@
     sheet.className = 'sheet';
     sheet.style.zIndex = String(zBase + 2);
 
-    var isModal = this.type === 'modal';
-    var title = isModal ? 'Crear complemento' : 'Seleccionar plantillas';
+    var actionsHtml = this.actionIcons.map(function(a, i){
+      return '<button type="button" class="icon-btn js-action-icon" data-idx="' + i + '" aria-label="' + a.label + '">' + a.svg + '</button>';
+    }).join('');
 
     sheet.innerHTML =
-      '<div class="handle-zone">' +
-        '<div class="handle-row"><div class="grabber"></div>' +
-          '<div class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>' +
-        '</div>' +
-        '<div class="header"><span class="title">' + title + '</span>' +
-        (isModal ? '<button type="button" class="close-x">&times;</button>' : '') +
+      '<div class="drag-zone">' +
+        '<div class="handle-zone"><div class="handle-row"><div class="grabber"></div>' +
+          '<div class="chevron-handle">' + ICONS.chevronDown + '</div>' +
+        '</div></div>' +
+        '<div class="header">' +
+          '<button type="button" class="nav-back" hidden aria-label="Volver">' + ICONS.chevronLeft + '</button>' +
+          '<span class="title">' + this.title + '</span>' +
+          '<div class="header-actions">' + actionsHtml + '</div>' +
+          '<button type="button" class="close-x" aria-label="Cerrar">&times;</button>' +
         '</div>' +
       '</div>' +
-      '<div class="content"></div>';
+      '<div class="content"><div class="nav-viewport"><div class="nav-track"></div></div></div>';
 
     var content = sheet.querySelector('.content');
-    content.innerHTML = isModal ? modalContentHtml() : drawerContentHtml();
 
     var footer = document.createElement('div');
     footer.className = 'sheet-footer';
     footer.style.zIndex = String(zBase + 2);
     footer.innerHTML =
       '<button type="button" class="footer-cancel">Cancelar</button>' +
-      '<button type="button" class="footer-primary">' + (isModal ? 'Guardar' : 'Añadir seleccionadas') + '</button>';
+      '<button type="button" class="footer-primary">' + this.primaryLabel + '</button>';
 
     group.appendChild(backdrop);
     group.appendChild(sheet);
@@ -574,33 +598,149 @@
     this.sheet = sheet;
     this.footer = footer;
     this.content = content;
+    this.navTrack = sheet.querySelector('.nav-track');
     this.grabber = sheet.querySelector('.grabber');
-    this.chevron = sheet.querySelector('.chevron');
+    this.chevronHandle = sheet.querySelector('.chevron-handle');
+    this.dragZone = sheet.querySelector('.drag-zone');
     this.handleZone = sheet.querySelector('.handle-zone');
+    this.headerRow = sheet.querySelector('.header');
+    this.navBackBtn = sheet.querySelector('.nav-back');
+    this.closeXBtn = sheet.querySelector('.close-x');
 
-    this.wireEvents();
-    if(isModal) this.wireModalFields();
-    else this.wireDrawerFields();
+    this.mountRootView(buildRoot);
+    this.wireChrome();
+    this.wireDirtyTracking();
+    if(!this.hasBackdrop && !this.isHug) this.wireContentDrag();
 
     this.layoutContent();
     this.applyVisual(this.ty);
   };
 
-  // El footer vive fuera del flujo flex del .sheet (para poder quedar
-  // anclado al fondo del viewport moviendo solo translateY, ver applyVisual).
-  // Por eso .content no puede usar flex:1 para calcular su alto visible:
-  // se fija una vez (no por frame) a la altura real disponible cuando la
-  // superficie está en su posición "full", que es el único estado en que
-  // hay scroll nativo real.
+  /* ---------- navegación interna (slide horizontal) ---------- */
+  SurfaceCtrl.prototype.mountRootView = function(buildRoot){
+    var el = document.createElement('div');
+    el.className = 'nav-view';
+    if(buildRoot) buildRoot(el, this);
+    this.navTrack.appendChild(el);
+    this.navStack = [{ title: this.title, el: el, scrollTop: 0 }];
+  };
+
+  SurfaceCtrl.prototype.updateHeaderForNav = function(){
+    var top = this.navStack[this.navStack.length - 1];
+    this.sheet.querySelector('.header .title').textContent = top.title;
+    this.navBackBtn.hidden = this.navStack.length <= 1;
+  };
+
+  SurfaceCtrl.prototype.pushView = function(title, builder){
+    var self = this;
+    var cur = this.navStack[this.navStack.length - 1];
+    cur.scrollTop = this.content.scrollTop;
+
+    var el = document.createElement('div');
+    el.className = 'nav-view';
+    builder(el, this);
+    this.navTrack.appendChild(el);
+    this.navStack.push({ title: title, el: el, scrollTop: 0 });
+    this.updateHeaderForNav();
+    this.content.scrollTop = 0;
+
+    var dur = reduceMotion ? 0 : CONFIG.snapDurationMs;
+    this.navTrack.style.transition = 'none';
+    this.navTrack.style.transform = 'translateX(0)';
+    var track = this.navTrack;
+    requestAnimationFrame(function(){
+      track.style.transition = dur ? ('transform ' + dur + 'ms ' + CONFIG.easing) : 'none';
+      requestAnimationFrame(function(){ track.style.transform = 'translateX(-100%)'; });
+    });
+    var cleanup = function(){
+      track.style.transition = 'none';
+      track.style.transform = 'translateX(0)';
+      cur.el.remove();
+      track.removeEventListener('transitionend', cleanup);
+    };
+    if(dur === 0){ requestAnimationFrame(cleanup); }
+    else { track.addEventListener('transitionend', cleanup, { once: true }); }
+  };
+
+  SurfaceCtrl.prototype.popView = function(){
+    if(this.navStack.length < 2) return;
+    var self = this;
+    var leaving = this.navStack.pop();
+    var target = this.navStack[this.navStack.length - 1];
+
+    this.navTrack.insertBefore(target.el, this.navTrack.firstChild);
+    this.navTrack.style.transition = 'none';
+    this.navTrack.style.transform = 'translateX(-100%)';
+    this.updateHeaderForNav();
+    this.content.scrollTop = leaving.scrollTop;
+
+    var dur = reduceMotion ? 0 : CONFIG.snapDurationMs;
+    var track = this.navTrack;
+    requestAnimationFrame(function(){
+      track.style.transition = dur ? ('transform ' + dur + 'ms ' + CONFIG.easing) : 'none';
+      requestAnimationFrame(function(){ track.style.transform = 'translateX(0)'; });
+    });
+    var cleanup = function(){
+      track.style.transition = 'none';
+      leaving.el.remove();
+      self.content.scrollTop = target.scrollTop;
+      track.removeEventListener('transitionend', cleanup);
+    };
+    if(dur === 0){ requestAnimationFrame(cleanup); }
+    else { track.addEventListener('transitionend', cleanup, { once: true }); }
+  };
+
+  /* ---------- layout / medidas ---------- */
+  // El footer vive fuera del flujo del .sheet (ver applyVisual, truco de
+  // translateY para quedar anclado al fondo del viewport). Por eso .content
+  // no puede depender de flex para calcular su alto visible: se fija una
+  // vez (no por frame) a la altura real disponible en la posición "full"
+  // (o, en hug, se deja auto para que abrace su contenido).
   SurfaceCtrl.prototype.layoutContent = function(){
+    if(this.isHug){
+      this.content.style.height = '';
+      return;
+    }
     var handleH = this.handleZone.offsetHeight;
+    var headerH = this.headerRow.offsetHeight;
     var footerH = this.footer.offsetHeight;
-    var h = vh() - this.floor() - handleH - footerH;
+    var h = vh() - this.floor() - handleH - headerH - footerH;
     this.content.style.height = Math.max(0, h) + 'px';
   };
 
+  SurfaceCtrl.prototype.measureHugVisibleHeight = function(){
+    var headerH = this.headerRow.offsetHeight;
+    var contentH = this.content.scrollHeight;
+    var footerH = this.footer.offsetHeight;
+    return headerH + contentH + footerH;
+  };
+
+  SurfaceCtrl.prototype.hugTy = function(){
+    var visible = this.measureHugVisibleHeight();
+    return Math.max(this.floor(), vh() - visible);
+  };
+
+  SurfaceCtrl.prototype.checkHugOverflow = function(){
+    if(!this.isHug) return;
+    var visible = this.measureHugVisibleHeight();
+    if(visible > vh() * 0.5) this.transitionHugToNormal();
+    else this.animateTo(this.hugTy());
+  };
+
+  SurfaceCtrl.prototype.transitionHugToNormal = function(){
+    this.isHug = false;
+    this.group.classList.remove('is-hug');
+    if(!this.hasBackdrop) this.wireContentDrag();
+    this.layoutContent();
+    var targetRest = this.hasBackdrop ? 'full' : 'half';
+    var targetTy = this.hasBackdrop ? this.floor() : this.half();
+    this.rest = targetRest;
+    this.animateTo(targetTy);
+  };
+
+  /* ---------- visual / animación ---------- */
   SurfaceCtrl.prototype.animEls = function(){
-    return [this.sheet, this.footer, this.backdrop, this.grabber, this.chevron];
+    return [this.sheet, this.footer, this.backdrop, this.grabber, this.chevronHandle];
   };
 
   SurfaceCtrl.prototype.applyVisual = function(ty){
@@ -608,21 +748,33 @@
     var floor = this.floor(), half = this.half(), closed = this.closed();
     this.sheet.style.transform = 'translateY(' + ty + 'px)';
 
-    var footerOffset = Math.max(0, ty - half);
+    var pivot = this.isHug ? ty : half;
+    var footerOffset = Math.max(0, ty - pivot);
     this.footer.style.transform = 'translateY(' + footerOffset + 'px)';
 
-    var visibleFrac = clamp01((closed - ty) / Math.max(1, (closed - half)));
-    this.backdrop.style.opacity = String(visibleFrac * 0.4);
+    if(this.hasBackdrop){
+      var visibleFrac = clamp01((closed - ty) / Math.max(1, (closed - floor)));
+      this.backdrop.style.opacity = String(visibleFrac * 0.4);
+    } else {
+      this.backdrop.style.opacity = '0';
+    }
 
-    var t = clamp01((half - ty) / Math.max(1, (half - floor)));
-    this.grabber.style.opacity = String(1 - t);
-    this.chevron.style.opacity = String(t);
-    this.chevron.style.transform = 'scale(' + (0.75 + 0.25 * t) + ')';
+    if(this.isHug || this.hasBackdrop){
+      this.grabber.style.opacity = '0';
+      this.chevronHandle.style.opacity = '1';
+      this.chevronHandle.style.transform = 'scale(1)';
+    } else {
+      var t = clamp01((half - ty) / Math.max(1, (half - floor)));
+      this.grabber.style.opacity = String(1 - t);
+      this.chevronHandle.style.opacity = String(t);
+      this.chevronHandle.style.transform = 'scale(' + (0.75 + 0.25 * t) + ')';
+    }
 
     this.updateTouchAction();
   };
 
   SurfaceCtrl.prototype.updateTouchAction = function(){
+    if(this.hasBackdrop || this.isHug){ this.content.style.touchAction = 'pan-y'; return; }
     this.content.style.touchAction = (this.rest === 'full') ? 'pan-y' : 'none';
   };
 
@@ -642,8 +794,10 @@
     });
     requestAnimationFrame(function(){
       self.applyVisual(target);
-      if(target === self.floor()) self.rest = 'full';
-      else if(target === self.half()) self.rest = 'half';
+      if(!self.isHug){
+        if(target === self.floor()) self.rest = 'full';
+        else if(target === self.half()) self.rest = 'half';
+      }
       self.updateTouchAction();
       var cleanup = function(){
         els.forEach(function(el){ el.style.transition = 'none'; });
@@ -653,13 +807,12 @@
       // Si el arrastre ya dejó la superficie exactamente en el destino, el
       // transform no cambia y "transitionend" nunca llegaría a disparar.
       if(dur === 0 || alreadyThere){ cleanup(); }
-      else { self.sheet.addEventListener('transitionend', cleanup, { once:true }); }
+      else { self.sheet.addEventListener('transitionend', cleanup, { once: true }); }
     });
   };
 
   SurfaceCtrl.prototype.needsConfirmToClose = function(){
-    if(this.type === 'modal') return this.dirty;
-    return CONFIG.confirmDrawerToggle && this.pendingSelection();
+    return this.dirty;
   };
 
   SurfaceCtrl.prototype.requestClose = function(){
@@ -676,24 +829,32 @@
       stack.pop();
       if(stack.length){
         var below = stack[stack.length - 1];
+        below.covered = false;
         below.setCoveredVisual(false);
-        var target = (below.savedRest === 'full') ? below.floor() : below.half();
-        below.animateTo(target);
+        if(below._wasForcedFull){
+          var target = below.savedRest === 'full' ? below.floor()
+            : below.savedRest === 'hug' ? below.hugTy()
+            : below.half();
+          below.rest = below.savedRest;
+          below.animateTo(target);
+        }
+        below._wasForcedFull = false;
       }
       updateBodyScrollLock();
       refreshDirtyIndicator();
     });
   };
 
-  /* ---------- eventos handle (grabber/header) ---------- */
-  SurfaceCtrl.prototype.wireEvents = function(){
+  /* ---------- cromo: drag zone (grabber+header), X, iconos, footer, backdrop ---------- */
+  SurfaceCtrl.prototype.wireChrome = function(){
     var self = this;
 
-    this.handleZone.addEventListener('pointerdown', function(e){
-      if(self.covered) return;
-      if(e.target.closest('.close-x')) return;
+    this.dragZone.addEventListener('pointerdown', function(e){
+      if(self.covered || self.isHug) return;
+      if(e.target.closest('.close-x') || e.target.closest('.nav-back') || e.target.closest('.icon-btn')) return;
       var session = {
         startClientY: e.clientY,
+        startT: performance.now(),
         startTy: self.ty,
         lastClientY: e.clientY,
         lastT: performance.now(),
@@ -704,11 +865,11 @@
         candA: null, candB: null
       };
       self._dragSession = session;
-      try{ self.handleZone.setPointerCapture(e.pointerId); }catch(err){}
+      try{ self.dragZone.setPointerCapture(e.pointerId); }catch(err){}
       self.animEls().forEach(function(el){ el.style.transition = 'none'; });
     });
 
-    this.handleZone.addEventListener('pointermove', function(e){
+    this.dragZone.addEventListener('pointermove', function(e){
       var session = self._dragSession;
       if(!session || e.pointerId !== session.pointerId) return;
       var now = performance.now();
@@ -717,10 +878,12 @@
       if(dt > 0) session.velocity = dy / dt;
       session.lastClientY = e.clientY;
       session.lastT = now;
-      if(Math.abs(e.clientY - session.startClientY) > 3) session.moved = true;
+      if(Math.abs(e.clientY - session.startClientY) > CONFIG.tapMaxDistancePx) session.moved = true;
 
       var candA, candB;
-      if(session.startRest === 'full'){
+      if(self.hasBackdrop){
+        candA = self.floor(); candB = self.closed();
+      } else if(session.startRest === 'full'){
         candA = self.floor(); candB = self.half();
       } else {
         var net = e.clientY - session.startClientY;
@@ -737,10 +900,12 @@
       var session = self._dragSession;
       if(!session || e.pointerId !== session.pointerId) return;
       self._dragSession = null;
-      try{ self.handleZone.releasePointerCapture(e.pointerId); }catch(err){}
+      try{ self.dragZone.releasePointerCapture(e.pointerId); }catch(err){}
 
-      if(!session.moved){
-        self.handleTap();
+      var elapsed = performance.now() - session.startT;
+      var isTap = !session.moved && elapsed <= CONFIG.tapMaxDurationMs;
+      if(!session.moved || isTap){
+        self.requestClose();
         return;
       }
       var candA = session.candA, candB = session.candB;
@@ -748,7 +913,7 @@
       var target = decideTarget(candA, candB, self.ty, session.velocity, CONFIG.snapDistancePct, CONFIG.snapVelocityThreshold);
       if(target === self.closed()){
         if(self.needsConfirmToClose()){
-          self.animateTo(self.half());
+          self.animateTo(self.hasBackdrop ? self.floor() : self.half());
           showConfirm(self);
         } else {
           self.doClose();
@@ -757,25 +922,63 @@
         self.animateTo(target);
       }
     };
-    this.handleZone.addEventListener('pointerup', endHandler);
-    this.handleZone.addEventListener('pointercancel', endHandler);
+    this.dragZone.addEventListener('pointerup', endHandler);
+    this.dragZone.addEventListener('pointercancel', endHandler);
+
+    this.navBackBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      self.popView();
+    });
+    this.closeXBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      self.requestClose();
+    });
+    Array.prototype.forEach.call(this.headerRow.querySelectorAll('.js-action-icon'), function(btn){
+      var idx = parseInt(btn.dataset.idx, 10);
+      var cfg = self.actionIcons[idx];
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        btn.classList.remove('pulse');
+        void btn.offsetWidth;
+        btn.classList.add('pulse');
+        if(cfg && cfg.onClick) cfg.onClick(self);
+      });
+    });
+
+    this.backdrop.addEventListener('click', function(){
+      if(self.covered || !self.hasBackdrop) return;
+      if(self.needsConfirmToClose()) return; // deshabilitado: sin confirm, sin cierre
+      self.doClose();
+    });
+    var cancelBtn = this.footer.querySelector('.footer-cancel');
+    var primaryBtn = this.footer.querySelector('.footer-primary');
+    cancelBtn.addEventListener('click', function(){ self.requestClose(); });
+    primaryBtn.addEventListener('click', function(){
+      self.dirty = false;
+      self.doClose();
+    });
   };
 
-  SurfaceCtrl.prototype.handleTap = function(){
-    if(this.type === 'drawer'){
-      if(this.rest === 'full') this.requestClose();
-    } else {
-      if(this.rest === 'full') this.animateTo(this.half());
-    }
+  SurfaceCtrl.prototype.wireDirtyTracking = function(){
+    var self = this;
+    var mark = function(e){
+      if(!isFormField(e.target)) return;
+      self.dirty = true;
+      refreshDirtyIndicator();
+    };
+    this.content.addEventListener('input', mark);
+    this.content.addEventListener('change', mark);
   };
 
-  /* ---------- eventos contenido (encadenamiento gesto->scroll) ---------- */
+  /* ---------- contenido: encadenamiento gesto->scroll (solo sin backdrop, no hug) ---------- */
   SurfaceCtrl.prototype.wireContentDrag = function(){
+    if(this._contentDragWired) return;
+    this._contentDragWired = true;
     var self = this;
     var content = this.content;
 
     content.addEventListener('pointerdown', function(e){
-      if(self.covered) return;
+      if(self.covered || self.hasBackdrop || self.isHug) return;
       content._drag = {
         pointerId: e.pointerId,
         startX: e.clientX,
@@ -884,132 +1087,38 @@
     content.addEventListener('pointercancel', endContent);
   };
 
-  /* ---------- campos drawer ---------- */
-  SurfaceCtrl.prototype.wireDrawerFields = function(){
-    var self = this;
-    this.selectedCount = 0;
-    var total = TEMPLATE_NAMES.length;
-    var checks = Array.prototype.slice.call(this.content.querySelectorAll('.tpl-check'));
-    var selAll = this.content.querySelector('.js-sel-all');
-    var countEl = this.content.querySelector('.js-sel-count');
-
-    function refresh(){
-      self.selectedCount = checks.filter(function(c){ return c.checked; }).length;
-      countEl.textContent = self.selectedCount + ' de ' + total + ' seleccionadas';
-      selAll.checked = self.selectedCount === total;
-      selAll.indeterminate = self.selectedCount > 0 && self.selectedCount < total;
-    }
-    checks.forEach(function(c){
-      c.addEventListener('change', refresh);
-    });
-    selAll.addEventListener('change', function(){
-      checks.forEach(function(c){ c.checked = selAll.checked; });
-      refresh();
-    });
-    refresh();
-
-    var stackMoreRow = this.content.querySelector('.js-stack-more');
-    if(stackMoreRow){
-      stackMoreRow.addEventListener('click', function(){ openSurface('drawer'); });
-    }
-
-    this.wireContentDrag();
-    this.wireCommonButtons();
-  };
-
-  /* ---------- campos modal ---------- */
-  SurfaceCtrl.prototype.wireModalFields = function(){
-    var self = this;
-    var fields = this.content.querySelectorAll('.mfield');
-    fields.forEach(function(f){
-      var evt = (f.tagName === 'SELECT' || f.type === 'checkbox' || f.type === 'file') ? 'change' : 'input';
-      f.addEventListener(evt, function(){
-        self.dirty = true;
-        refreshDirtyIndicator();
-      });
-    });
-
-    var textarea = this.content.querySelector('textarea.mfield');
-    var descCount = this.content.querySelector('.js-desc-count');
-    if(textarea){
-      textarea.addEventListener('input', function(){
-        descCount.textContent = String(textarea.value.length);
-      });
-    }
-
-    var fileInput = this.content.querySelector('.js-file-input');
-    var uploadBtn = this.content.querySelector('.js-upload-btn');
-    var fileNameLabel = this.content.querySelector('.js-filename');
-    if(uploadBtn){
-      uploadBtn.addEventListener('click', function(){ fileInput.click(); });
-      fileInput.addEventListener('change', function(){
-        fileNameLabel.textContent = fileInput.files && fileInput.files[0] ? fileInput.files[0].name : 'Ningún archivo seleccionado';
-      });
-    }
-
-    var closeX = this.sheet.querySelector('.close-x');
-    if(closeX){
-      closeX.addEventListener('click', function(e){
-        e.stopPropagation();
-        self.requestClose();
-      });
-    }
-
-    var tplRow = this.content.querySelector('.js-tpl-row');
-    if(tplRow){
-      tplRow.addEventListener('click', function(){
-        openSurface('drawer');
-      });
-    }
-
-    this.wireContentDrag();
-    this.wireCommonButtons();
-  };
-
-  SurfaceCtrl.prototype.wireCommonButtons = function(){
-    var self = this;
-    this.backdrop.addEventListener('click', function(){
-      if(self.covered) return;
-      if(self.needsConfirmToClose()) return; // deshabilitado: sin confirm, sin cierre
-      self.doClose();
-    });
-    var cancelBtn = this.footer.querySelector('.footer-cancel');
-    var primaryBtn = this.footer.querySelector('.footer-primary');
-    cancelBtn.addEventListener('click', function(){ self.requestClose(); });
-    primaryBtn.addEventListener('click', function(){
-      self.dirty = false;
-      self.doClose();
-    });
-  };
-
   /* ============ apertura / cierre / apilado ============ */
-  function initialRestKind(){ return CONFIG.initialRestPct >= 75 ? 'full' : 'half'; }
-
-  function openSurface(type){
+  function openSurface(opts){
+    var incomingHasBackdrop = !!opts.hasBackdrop;
     if(stack.length){
       var below = stack[stack.length - 1];
-      below.savedRest = below.rest;
+      below.covered = true;
+      below._wasForcedFull = incomingHasBackdrop && !below.isHug;
+      if(below._wasForcedFull){
+        below.savedRest = below.rest;
+        below.animateTo(below.floor());
+      }
       below.setCoveredVisual(true);
-      below.animateTo(below.floor());
     }
     var level = stack.length;
-    var surface = new SurfaceCtrl(type, level);
+    var surface = new SurfaceCtrl(level, opts);
     stack.push(surface);
     surface.applyVisual(surface.closed());
     requestAnimationFrame(function(){
       var targetTy, targetRest;
-      if(level === 0){
-        targetRest = initialRestKind();
-        targetTy = targetRest === 'full' ? surface.floor() : surface.half();
+      if(surface.isHug){
+        targetTy = surface.hugTy(); targetRest = 'hug';
+      } else if(surface.hasBackdrop){
+        targetTy = surface.floor(); targetRest = 'full';
       } else {
-        targetRest = 'half';
-        targetTy = surface.half();
+        targetTy = surface.half(); targetRest = 'half';
       }
       surface.rest = targetRest;
       surface.animateTo(targetTy);
     });
     updateBodyScrollLock();
     refreshDirtyIndicator();
+    return surface;
   }
 
   function updateBodyScrollLock(){
@@ -1020,24 +1129,281 @@
 
   function refreshDirtyIndicator(){
     var el = document.getElementById('dirtyIndicator');
-    var modal = null;
-    for(var i = stack.length - 1; i >= 0; i--){
-      if(stack[i].type === 'modal'){ modal = stack[i]; break; }
-    }
-    if(!modal) el.textContent = 'Ninguno abierto';
-    else el.textContent = modal.dirty ? 'Sí (modificado)' : 'No (sin cambios)';
+    var top = stack.length ? stack[stack.length - 1] : null;
+    if(!top) el.textContent = 'Ninguna abierta';
+    else el.textContent = top.dirty ? 'Sí (modificado)' : 'No (sin cambios)';
   }
 
-  document.getElementById('openDrawerBtn').addEventListener('click', function(){ openSurface('drawer'); });
-  document.getElementById('openModalBtn').addEventListener('click', function(){ openSurface('modal'); });
+  /* ============ contenido de prueba compartido ============ */
+  var TEMPLATE_NAMES = [
+    'Evento estándar', 'Lista VIP', 'Reserva mesa', 'Acceso doble',
+    'Pack promotor', 'Guestlist básica', 'Entrada anticipada', 'Combo bebida'
+  ];
+
+  function buildTemplateDetailView(el, surface, name, idx){
+    el.innerHTML =
+      '<div class="field">' +
+        '<label class="flabel">Nombre de la plantilla</label>' +
+        '<input type="text" class="" value="' + name + '">' +
+      '</div>' +
+      '<div class="field">' +
+        '<label class="flabel">Campos incluidos</label>' +
+        '<input type="text" value="12 campos" readonly>' +
+      '</div>' +
+      '<div class="field">' +
+        '<label class="flabel">Notas</label>' +
+        '<textarea placeholder="Notas internas sobre la plantilla #' + (idx + 1) + '…"></textarea>' +
+      '</div>';
+  }
+
+  function buildTemplatesListView(el, surface){
+    var rows = TEMPLATE_NAMES.map(function(name, i){
+      return '' +
+        '<label class="tpl-card">' +
+          '<input type="checkbox" class="chk tpl-check" data-idx="' + i + '">' +
+          '<div class="thumb"></div>' +
+          '<div class="txt"><div class="t1">' + name + '</div><div class="t2">Plantilla #' + (i + 1) + ' · 12 campos</div></div>' +
+          '<button type="button" class="detail-nav js-tpl-detail" data-idx="' + i + '" aria-label="Ver detalle">' + ICONS.chevronRight + '</button>' +
+        '</label>';
+    }).join('');
+    el.innerHTML =
+      '<input type="text" class="search-field" placeholder="Buscar plantilla…">' +
+      '<div class="select-all-row">' +
+        '<div class="left"><input type="checkbox" class="chk js-sel-all"><span>Todos</span></div>' +
+        '<div class="count js-sel-count">0 de 8 seleccionadas</div>' +
+      '</div>' +
+      rows;
+
+    var total = TEMPLATE_NAMES.length;
+    var checks = Array.prototype.slice.call(el.querySelectorAll('.tpl-check'));
+    var selAll = el.querySelector('.js-sel-all');
+    var countEl = el.querySelector('.js-sel-count');
+    function refresh(){
+      var n = checks.filter(function(c){ return c.checked; }).length;
+      countEl.textContent = n + ' de ' + total + ' seleccionadas';
+      selAll.checked = n === total;
+      selAll.indeterminate = n > 0 && n < total;
+    }
+    checks.forEach(function(c){ c.addEventListener('change', refresh); });
+    selAll.addEventListener('change', function(){
+      checks.forEach(function(c){ c.checked = selAll.checked; });
+      refresh();
+    });
+    refresh();
+
+    Array.prototype.forEach.call(el.querySelectorAll('.js-tpl-detail'), function(btn){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var idx = parseInt(btn.dataset.idx, 10);
+        surface.pushView(TEMPLATE_NAMES[idx], function(viewEl){
+          buildTemplateDetailView(viewEl, surface, TEMPLATE_NAMES[idx], idx);
+        });
+      });
+    });
+  }
+
+  function buildClientFicha(el){
+    el.innerHTML =
+      '<div class="client-header">' +
+        '<div class="avatar">MG</div>' +
+        '<div><div class="client-name">María González</div><div class="client-sub">Cliente desde 2022 · Madrid</div></div>' +
+      '</div>' +
+      '<div class="tag-row"><span class="tag">VIP</span><span class="tag">Recurrente</span><span class="tag">Newsletter</span></div>' +
+      '<div class="client-tabs">' +
+        '<div class="client-tab active">Actividad</div><div class="client-tab">Accesos</div><div class="client-tab">Pagos</div><div class="client-tab">Notas</div>' +
+      '</div>' +
+      '<div class="chip-row">' +
+        '<span class="chip active">Todo</span><span class="chip">Este mes</span><span class="chip">Compras</span><span class="chip">Accesos</span><span class="chip">Reembolsos</span>' +
+      '</div>' +
+      '<div class="metric-grid">' +
+        '<div class="metric-card"><div class="num">18</div><div class="lbl">Visitas totales</div></div>' +
+        '<div class="metric-card"><div class="num">312€</div><div class="lbl">Gasto medio</div></div>' +
+        '<div class="metric-card"><div class="num">4.8</div><div class="lbl">Valoración</div></div>' +
+        '<div class="metric-card"><div class="num">2</div><div class="lbl">Incidencias</div></div>' +
+      '</div>' +
+      '<div class="table-wrap"><table class="data-table">' +
+        '<thead><tr><th>Fecha</th><th>Evento</th><th>Importe</th></tr></thead>' +
+        '<tbody>' +
+        ['12 mar', '28 mar', '09 abr', '22 abr', '03 may', '17 may', '30 may', '14 jun'].map(function(d, i){
+          return '<tr><td>' + d + '</td><td>Evento #' + (i + 1) + '</td><td>' + (18 + i * 7) + '€</td></tr>';
+        }).join('') +
+        '</tbody>' +
+      '</table></div>';
+  }
+
+  /* ============ escenario 1: modal hug con backdrop ============ */
+  document.getElementById('scn1').addEventListener('click', function(){
+    openSurface({
+      type: 'modal', hasBackdrop: true, isHug: true,
+      title: 'Crear complemento (corto)', primaryLabel: 'Guardar',
+      buildRoot: function(el){
+        el.innerHTML =
+          '<div class="field"><label class="flabel">Nombre</label><input type="text" placeholder="Nombre del complemento"></div>' +
+          '<div class="field"><label class="flabel">Precio</label><div class="price-wrap"><input type="number" placeholder="0.00"><span>€</span></div></div>';
+      }
+    });
+  });
+
+  /* ============ escenario 2: drawer hug sin backdrop ============ */
+  document.getElementById('scn2').addEventListener('click', function(){
+    openSurface({
+      type: 'drawer', hasBackdrop: false, isHug: true,
+      title: 'Renombrar', primaryLabel: 'Renombrar',
+      buildRoot: function(el){
+        el.innerHTML = '<div class="field"><label class="flabel">Nuevo nombre</label><input type="text" placeholder="Plantilla sin título"></div>';
+      }
+    });
+  });
+
+  /* ============ escenario 3: modal 100% con backdrop, formulario largo ============ */
+  document.getElementById('scn3').addEventListener('click', function(){
+    openSurface({
+      type: 'modal', hasBackdrop: true, isHug: false,
+      title: 'Crear complemento', primaryLabel: 'Guardar',
+      buildRoot: function(el, surface){
+        el.innerHTML =
+          '<div class="field"><label class="flabel">Nombre</label><input type="text" placeholder="Nombre del complemento"></div>' +
+          '<div class="field"><div class="toggle-row"><div><div class="tt">Disponible</div><div class="dd">Visible para la venta en el acceso.</div></div>' +
+            '<label class="switch"><input type="checkbox"><div class="track"></div><div class="knob"></div></label></div></div>' +
+          '<div class="field"><label class="flabel">Precio</label><div class="price-wrap"><input type="number" placeholder="0.00"><span>€</span></div></div>' +
+          '<div class="field"><label class="flabel">Descripción</label><textarea maxlength="240" placeholder="Describe el complemento…"></textarea>' +
+            '<div class="counter"><span class="js-desc-count">0</span>/240</div></div>' +
+          '<div class="field"><label class="flabel">Archivo</label><div class="upload-zone">' +
+            '<div class="fname js-filename">Ningún archivo seleccionado</div>' +
+            '<button type="button" class="upload-btn js-upload-btn">Subir archivo</button>' +
+            '<input type="file" class="js-file-input" style="display:none"></div></div>';
+
+        var textarea = el.querySelector('textarea');
+        var descCount = el.querySelector('.js-desc-count');
+        textarea.addEventListener('input', function(){ descCount.textContent = String(textarea.value.length); });
+
+        var fileInput = el.querySelector('.js-file-input');
+        var uploadBtn = el.querySelector('.js-upload-btn');
+        var fileNameLabel = el.querySelector('.js-filename');
+        uploadBtn.addEventListener('click', function(){ fileInput.click(); });
+        fileInput.addEventListener('change', function(){
+          fileNameLabel.textContent = fileInput.files && fileInput.files[0] ? fileInput.files[0].name : 'Ningún archivo seleccionado';
+        });
+      }
+    });
+  });
+
+  /* ============ escenario 4: drawer con navegación interna ============ */
+  document.getElementById('scn4').addEventListener('click', function(){
+    openSurface({
+      type: 'drawer', hasBackdrop: true, isHug: false,
+      title: 'Configurar complemento', primaryLabel: 'Guardar',
+      actionIcons: [{
+        label: 'Editar', svg: ICONS.pencil,
+        onClick: function(){ /* decorativo: demuestra la zona de acciones del header */ }
+      }],
+      buildRoot: function(el, surface){
+        el.innerHTML =
+          '<div class="field"><label class="flabel">Nombre</label><input type="text" placeholder="Nombre del complemento"></div>' +
+          '<div class="field"><div class="toggle-row"><div><div class="tt">Disponible</div><div class="dd">Visible para la venta en el acceso.</div></div>' +
+            '<label class="switch"><input type="checkbox"><div class="track"></div><div class="knob"></div></label></div></div>' +
+          '<div class="tpl-row js-tpl-row"><div><div class="tt">Plantilla</div><div class="sub js-tpl-sub">Ninguna seleccionada</div></div>' + ICONS.chevronRight + '</div>';
+
+        el.querySelector('.js-tpl-row').addEventListener('click', function(){
+          surface.pushView('Seleccionar plantillas', function(viewEl){
+            buildTemplatesListView(viewEl, surface);
+          });
+        });
+      }
+    });
+  });
+
+  /* ============ escenario 5: drawer sin backdrop al 50%, ficha cliente ============ */
+  document.getElementById('scn5').addEventListener('click', function(){
+    openSurface({
+      type: 'drawer', hasBackdrop: CONFIG.testDrawerBackdrop, isHug: false,
+      title: 'Ficha cliente', primaryLabel: 'Guardar cambios',
+      buildRoot: function(el){ buildClientFicha(el); }
+    });
+  });
+
+  /* ============ escenario 6/7: drawer sobre drawer (anchos distintos) ============ */
+  function buildSecondaryPanel(el){
+    el.innerHTML =
+      '<div class="field"><label class="flabel">Etiqueta</label><input type="text" placeholder="Nombre del filtro"></div>' +
+      '<p style="font-size:13px;color:var(--gray-500);line-height:1.5;">Panel secundario de prueba, apilado sobre el drawer ancho.</p>';
+  }
+  document.getElementById('scn6').addEventListener('click', function(){
+    openSurface({
+      type: 'drawer', hasBackdrop: false, isHug: false,
+      title: 'Panel ancho (70%)', primaryLabel: 'Aplicar',
+      buildRoot: function(el){
+        el.innerHTML =
+          '<p style="font-size:13px;color:var(--gray-500);line-height:1.5;margin:4px 0 16px;">' +
+          'En desktop este drawer ocuparía un ancho distinto (70%) al de un drawer convencional. Usa los botones para apilar otro encima.</p>' +
+          '<button type="button" class="btn btn-trigger js-stack-nobd" style="width:100%;margin-bottom:10px;">Apilar encima (sin backdrop)</button>' +
+          '<button type="button" class="btn btn-trigger js-stack-bd" style="width:100%;">Apilar encima (con backdrop)</button>';
+        el.querySelector('.js-stack-nobd').addEventListener('click', function(){
+          openSurface({ type: 'drawer', hasBackdrop: false, isHug: false, title: 'Panel secundario', primaryLabel: 'Aplicar', buildRoot: buildSecondaryPanel });
+        });
+        el.querySelector('.js-stack-bd').addEventListener('click', function(){
+          openSurface({ type: 'drawer', hasBackdrop: true, isHug: false, title: 'Panel secundario', primaryLabel: 'Aplicar', buildRoot: buildSecondaryPanel });
+        });
+      }
+    });
+  });
+
+  /* ============ escenario 8 (visual): drawer con estado sucio ============ */
+  document.getElementById('scn7').addEventListener('click', function(){
+    openSurface({
+      type: 'drawer', hasBackdrop: false, isHug: false,
+      title: 'Notas', primaryLabel: 'Guardar nota',
+      actionIcons: [
+        { label: 'Editar', svg: ICONS.pencil, onClick: function(){} },
+        { label: 'Vaciar', svg: ICONS.trash, onClick: function(s){
+            var ta = s.content.querySelector('textarea');
+            if(ta){ ta.value = ''; }
+          } }
+      ],
+      buildRoot: function(el){
+        el.innerHTML =
+          '<div class="field"><label class="flabel">Título</label><input type="text" placeholder="Título de la nota"></div>' +
+          '<div class="field"><label class="flabel">Contenido</label><textarea placeholder="Escribe algo para ensuciar el estado…"></textarea></div>' +
+          '<p style="font-size:12px;color:var(--gray-500);line-height:1.5;">Escribe en cualquier campo y luego prueba a cerrar con tap en el chevron, arrastre, la X o Cancelar: en los cuatro casos debe aparecer el confirm de descarte.</p>';
+      }
+    });
+  });
+
+  /* ============ escenario 9: hug que crece más allá del 50% ============ */
+  document.getElementById('scn8').addEventListener('click', function(){
+    var fieldCount = 0;
+    var surfaceRef = openSurface({
+      type: 'drawer', hasBackdrop: false, isHug: true,
+      title: 'Formulario dinámico', primaryLabel: 'Guardar',
+      buildRoot: function(el, surface){
+        el.innerHTML =
+          '<div class="field"><label class="flabel">Nombre</label><input type="text" placeholder="Campo inicial"></div>' +
+          '<div class="js-dynamic-fields"></div>' +
+          '<button type="button" class="upload-btn js-add-field">Añadir campo</button>' +
+          '<p style="font-size:12px;color:var(--gray-500);line-height:1.5;margin-top:10px;">Añade campos hasta superar el 50% del viewport: la superficie dejará de ser "hug", aparecerá el grabber y pasará a su posición de reposo normal.</p>';
+
+        var wrap = el.querySelector('.js-dynamic-fields');
+        el.querySelector('.js-add-field').addEventListener('click', function(){
+          fieldCount++;
+          var f = document.createElement('div');
+          f.className = 'field';
+          f.innerHTML = '<label class="flabel">Campo extra ' + fieldCount + '</label><input type="text" placeholder="Valor…">';
+          wrap.appendChild(f);
+          surface.checkHugOverflow();
+        });
+      }
+    });
+    void surfaceRef;
+  });
 
   /* ============ resize / orientación ============ */
   window.addEventListener('resize', function(){
     stack.forEach(function(s){
       s.layoutContent();
       if(s._dragSession || (s.content && s.content._drag && s.content._drag.engaged)) return;
+      if(s.isHug){ s.applyVisual(s.hugTy()); return; }
       var target;
-      if(s.covered) target = s.floor();
+      if(s.covered && s._wasForcedFull) target = s.floor();
       else target = (s.rest === 'full') ? s.floor() : s.half();
       s.applyVisual(target);
     });
@@ -1055,24 +1421,27 @@
   var cfgDur = document.getElementById('cfgDur');
   var cfgEase = document.getElementById('cfgEase');
   var cfgOffset = document.getElementById('cfgOffset');
-  var cfgInitial = document.getElementById('cfgInitial');
-  var cfgDrawerConfirm = document.getElementById('cfgDrawerConfirm');
+  var cfgTapDist = document.getElementById('cfgTapDist');
+  var cfgTapDur = document.getElementById('cfgTapDur');
+  var cfgTestBackdrop = document.getElementById('cfgTestBackdrop');
 
   cfgDist.value = CONFIG.snapDistancePct;
   cfgVel.value = CONFIG.snapVelocityThreshold;
   cfgDur.value = CONFIG.snapDurationMs;
   cfgEase.value = CONFIG.easing;
   cfgOffset.value = CONFIG.stackOffsetPx;
-  cfgInitial.value = CONFIG.initialRestPct;
-  cfgDrawerConfirm.checked = CONFIG.confirmDrawerToggle;
+  cfgTapDist.value = CONFIG.tapMaxDistancePx;
+  cfgTapDur.value = CONFIG.tapMaxDurationMs;
+  cfgTestBackdrop.checked = CONFIG.testDrawerBackdrop;
 
   cfgDist.addEventListener('input', function(){ CONFIG.snapDistancePct = parseFloat(cfgDist.value) || 25; });
   cfgVel.addEventListener('input', function(){ CONFIG.snapVelocityThreshold = parseFloat(cfgVel.value) || 0.5; });
   cfgDur.addEventListener('input', function(){ CONFIG.snapDurationMs = parseFloat(cfgDur.value) || 0; });
   cfgEase.addEventListener('change', function(){ CONFIG.easing = cfgEase.value; });
   cfgOffset.addEventListener('input', function(){ CONFIG.stackOffsetPx = parseFloat(cfgOffset.value) || 0; });
-  cfgInitial.addEventListener('input', function(){ CONFIG.initialRestPct = parseFloat(cfgInitial.value) || 50; });
-  cfgDrawerConfirm.addEventListener('change', function(){ CONFIG.confirmDrawerToggle = cfgDrawerConfirm.checked; });
+  cfgTapDist.addEventListener('input', function(){ CONFIG.tapMaxDistancePx = parseFloat(cfgTapDist.value) || 8; });
+  cfgTapDur.addEventListener('input', function(){ CONFIG.tapMaxDurationMs = parseFloat(cfgTapDur.value) || 250; });
+  cfgTestBackdrop.addEventListener('change', function(){ CONFIG.testDrawerBackdrop = cfgTestBackdrop.checked; });
 
   refreshDirtyIndicator();
 })();
